@@ -19,8 +19,8 @@ function StateMachine:change(stateName, enterParams)
 	self.current:enter(enterParams)
 end
 
-function StateMachine:update(dt)
-	self.current:update(dt)
+function StateMachine:update(dt, def)
+	self.current:update(dt, def)
 end
 
 function StateMachine:render()

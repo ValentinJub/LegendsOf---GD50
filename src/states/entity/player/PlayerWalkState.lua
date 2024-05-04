@@ -38,8 +38,8 @@ function PlayerWalkState:update(dt)
         self.entity:changeState('swing-sword')
     end
 
-    -- perform base collision detection against walls
-    EntityWalkState.update(self, dt)
+    -- perform base collision detection against walls and objects
+    EntityWalkState.update(self, dt, {objects = self.dungeon.currentRoom.objects})
 
     -- if we bumped something when checking collision, check any object collisions
     if self.bumped then

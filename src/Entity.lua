@@ -79,7 +79,7 @@ function Entity:changeAnimation(name)
     self.currentAnimation = self.animations[name]
 end
 
-function Entity:update(dt)
+function Entity:update(dt, def)
     if self.invulnerable then
         self.flashTimer = self.flashTimer + dt
         self.invulnerableTimer = self.invulnerableTimer + dt
@@ -92,7 +92,7 @@ function Entity:update(dt)
         end
     end
 
-    self.stateMachine:update(dt)
+    self.stateMachine:update(dt, def)
 
     if self.currentAnimation then
         self.currentAnimation:update(dt)

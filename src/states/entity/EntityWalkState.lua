@@ -22,7 +22,7 @@ function EntityWalkState:init(entity, dungeon)
     self.bumped = false
 end
 
-function EntityWalkState:update(dt)
+function EntityWalkState:update(dt, def)
     
     -- assume we didn't hit a wall
     self.bumped = false
@@ -60,6 +60,27 @@ function EntityWalkState:update(dt)
             self.bumped = true
         end
     end
+
+    if def then
+        if def.objects then
+            for k, obj in pairs(def.objects) do
+                if obj.solid then
+                    if obj:collides(self.entity) then
+                        self.bumped = true
+                        if self.entity.direction == 'left' then
+                            self.entity.x = obj.x + obj.width + 1
+                        elseif self.entity.direction == 'right' then
+                            self.entity.x = obj.x - self.entity.width - 1
+                        elseif self.entity.direction == 'up' then
+                            self.entity.y = obj.y + obj.height + 1
+                        elseif self.entity.direction == 'down' then
+                            self.entity.y = obj.y - self.entity.height - 1
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
 
 function EntityWalkState:processAI(params, dt)
@@ -94,7 +115,7 @@ function EntityWalkState:render()
         math.floor(self.entity.x - self.entity.offsetX), math.floor(self.entity.y - self.entity.offsetY))
     
     -- debug code
-    -- love.graphics.setColor(255, 0, 255, 255)
-    -- love.graphics.rectangle('line', self.entity.x, self.entity.y, self.entity.width, self.entity.height)
-    -- love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(255, 0, 255, 255)
+    love.graphics.rectangle('line', self.entity.x, self.entity.y, self.entity.width, self.entity.height)
+    love.graphics.setColor(255, 255, 255, 255)
 end

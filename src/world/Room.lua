@@ -77,9 +77,32 @@ function Room:generateEntities()
 end
 
 --[[
-    Randomly creates an assortment of obstacles for the player to navigate around.
+    Randomly creates an assortment of obstacles/objects for the player to navigate/interact with.
 ]]
 function Room:generateObjects()
+    self:generateSwitch()
+    for i = 1, math.random(5) do
+        self:generatePot()
+    end
+end
+
+function Room:generatePot() 
+    local pot = GameObject(
+        GAME_OBJECT_DEFS['pot'],
+        math.random(MAP_RENDER_OFFSET_X + TILE_SIZE,
+                    VIRTUAL_WIDTH - TILE_SIZE * 2 - 16),
+        math.random(MAP_RENDER_OFFSET_Y + TILE_SIZE,
+                    VIRTUAL_HEIGHT - (VIRTUAL_HEIGHT - MAP_HEIGHT * TILE_SIZE) + MAP_RENDER_OFFSET_Y - TILE_SIZE - 16)
+    )
+
+    table.insert(self.objects, pot)
+end
+
+--[[
+    Randomly creates a switch object that will open all doors in the room when
+    pressed.
+]]
+function Room:generateSwitch()
     local switch = GameObject(
         GAME_OBJECT_DEFS['switch'],
         math.random(MAP_RENDER_OFFSET_X + TILE_SIZE,
@@ -161,7 +184,7 @@ function Room:update(dt)
             entity.dead = true
         elseif not entity.dead then
             entity:processAI({room = self}, dt)
-            entity:update(dt)
+            entity:update(dt, {objects = self.objects})
         end
 
         -- collision between the player and entities in the room

@@ -1,5 +1,9 @@
 {
     "Lua.diagnostics.globals": [
-        "love"
+        "love",
+        "gTextures",
+        "gFrames",
+        "gFonts",
+        "gSounds"
     ]
 }

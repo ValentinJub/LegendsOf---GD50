@@ -5,7 +5,7 @@
     Author: Colton Ogden
     cogden@cs50.harvard.edu
 ]]
-require("lldebugger").start()
+-- require("lldebugger").start()
 require 'src/Dependencies'
 
 function love.load()
