@@ -4,6 +4,6 @@
         "gTextures",
         "gFrames",
         "gFonts",
-        "gSounds"
+        "gSounds",
     ]
 }

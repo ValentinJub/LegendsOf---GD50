@@ -20,22 +20,51 @@ end
 function PlayerWalkState:update(dt)
     if love.keyboard.isDown('left') then
         self.entity.direction = 'left'
-        self.entity:changeAnimation('walk-left')
+        if self.entity.projectile then
+            self.entity:changeAnimation ('walk-pot-left')
+        else
+            self.entity:changeAnimation('walk-left')
+        end
     elseif love.keyboard.isDown('right') then
         self.entity.direction = 'right'
-        self.entity:changeAnimation('walk-right')
+        if self.entity.projectile then
+            self.entity:changeAnimation('walk-pot-right')
+        else
+            self.entity:changeAnimation('walk-right')
+        end 
     elseif love.keyboard.isDown('up') then
         self.entity.direction = 'up'
-        self.entity:changeAnimation('walk-up')
+        if self.entity.projectile then
+            self.entity:changeAnimation('walk-pot-up')
+        else
+            self.entity:changeAnimation('walk-up')
+        end 
     elseif love.keyboard.isDown('down') then
         self.entity.direction = 'down'
-        self.entity:changeAnimation('walk-down')
+        if self.entity.projectile then
+            self.entity:changeAnimation('walk-pot-down')
+        else
+            self.entity:changeAnimation('walk-down')
+        end 
     else
         self.entity:changeState('idle')
     end
 
-    if love.keyboard.wasPressed('space') then
-        self.entity:changeState('swing-sword')
+    if not self.entity.projectile then
+        if love.keyboard.wasPressed('space') then
+            self.entity:changeState('swing-sword')
+        end
+
+        if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+            self.entity:changeState('pot-lift')
+        end
+    else
+        if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+            self.entity.frame = 111
+            self.entity.projectile:throw(self.entity.direction)
+            self.entity.projectile = nil
+            self.entity:changeState('walk')
+        end
     end
 
     -- perform base collision detection against walls and objects

@@ -19,6 +19,9 @@ function GameObject:init(def, x, y)
     -- whether it acts as an obstacle or not
     self.solid = def.solid
 
+    self.consumable = def.consumable or false
+    self.consumed = false
+
     self.defaultState = def.defaultState
     self.state = self.defaultState
     self.states = def.states
@@ -31,6 +34,7 @@ function GameObject:init(def, x, y)
 
     -- default empty collision callback
     self.onCollide = function() end
+    self.onConsume = function() end
 end
 
 function GameObject:collides(target) 
@@ -45,7 +49,7 @@ end
 function GameObject:render(adjacentOffsetX, adjacentOffsetY)
     love.graphics.draw(gTextures[self.texture], gFrames[self.texture][self.states[self.state].frame or self.frame],
         self.x + adjacentOffsetX, self.y + adjacentOffsetY)
-    love.graphics.setColor(255, 0, 255, 255)
-    love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
-    love.graphics.setColor(255, 255, 255, 255)
+    -- love.graphics.setColor(255, 0, 255, 255)
+    -- love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
+    -- love.graphics.setColor(255, 255, 255, 255)
 end

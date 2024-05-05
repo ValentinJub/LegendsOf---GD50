@@ -8,6 +8,20 @@
 
 PlayerIdleState = Class{__includes = EntityIdleState}
 
+function PlayerIdleState:init(entity)
+    self.entity = entity
+
+    if self.entity.projectile then
+        self.entity:changeAnimation('idle-pot-' .. self.entity.direction)
+    else
+        self.entity:changeAnimation('idle-' .. self.entity.direction)
+    end
+
+    -- used for AI waiting
+    self.waitDuration = 0
+    self.waitTimer = 0
+end
+
 function PlayerIdleState:enter(params)
     
     -- render offset for spaced character sprite (negated in render function of state)
@@ -21,7 +35,20 @@ function PlayerIdleState:update(dt)
         self.entity:changeState('walk')
     end
 
-    if love.keyboard.wasPressed('space') then
-        self.entity:changeState('swing-sword')
+    if not self.entity.projectile then 
+        if love.keyboard.wasPressed('space') then
+            self.entity:changeState('swing-sword')
+        end
+        if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+            self.entity:changeState('pot-lift')
+        end
+    else
+        if love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+            self.entity.frame = 111
+            self.entity.projectile:throw(self.entity.direction)
+            self.entity.projectile = nil
+            self.entity:changeState('idle')
+        end
     end
+
 end

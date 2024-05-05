@@ -64,9 +64,9 @@ function EntityWalkState:update(dt, def)
     if def then
         if def.objects then
             for k, obj in pairs(def.objects) do
-                if obj.solid then
+                if obj.solid and not obj.consumed then
                     if obj:collides(self.entity) then
-                        self.bumped = true
+                         self.bumped = true
                         if self.entity.direction == 'left' then
                             self.entity.x = obj.x + obj.width + 1
                         elseif self.entity.direction == 'right' then
@@ -115,7 +115,7 @@ function EntityWalkState:render()
         math.floor(self.entity.x - self.entity.offsetX), math.floor(self.entity.y - self.entity.offsetY))
     
     -- debug code
-    love.graphics.setColor(255, 0, 255, 255)
-    love.graphics.rectangle('line', self.entity.x, self.entity.y, self.entity.width, self.entity.height)
-    love.graphics.setColor(255, 255, 255, 255)
+    -- love.graphics.setColor(255, 0, 255, 255)
+    -- love.graphics.rectangle('line', self.entity.x, self.entity.y, self.entity.width, self.entity.height)
+    -- love.graphics.setColor(255, 255, 255, 255)
 end

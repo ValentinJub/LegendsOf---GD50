@@ -28,6 +28,7 @@ function Entity:init(def)
     self.walkSpeed = def.walkSpeed
 
     self.health = def.health
+    self.maxHealth = self.health
 
     -- flags for flashing the entity when hit
     self.invulnerable = false
@@ -37,6 +38,7 @@ function Entity:init(def)
     -- timer for turning transparency on and off, flashing
     self.flashTimer = 0
 
+    self.projectile = nil
     self.dead = false
 end
 
@@ -64,6 +66,13 @@ end
 
 function Entity:damage(dmg)
     self.health = self.health - dmg
+end
+
+function Entity:heal(hp) 
+    self.health = self.health + hp
+    if self.health > self.maxHealth then
+        self.health = self.maxHealth
+    end
 end
 
 function Entity:goInvulnerable(duration)

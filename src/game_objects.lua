@@ -43,5 +43,20 @@ GAME_OBJECT_DEFS = {
                 frame = 111
             }
         }
+    },
+    ['heart'] = {
+        type = 'heart',
+        texture = 'hearts',
+        frame = 5,
+        width = 16,
+        height = 16,
+        solid = false,
+        consumbale = true,
+        defaultState = 'idle',
+        states = {
+            ['idle'] = {
+                frame = 5
+            }
+        }
     }
 }

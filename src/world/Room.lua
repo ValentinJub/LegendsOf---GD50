@@ -23,6 +23,9 @@ function Room:init(player)
     self.objects = {}
     self:generateObjects()
 
+    -- throwable objects in the room
+    self.throwable = {}
+
     -- doorways that lead to other dungeon rooms
     self.doorways = {}
     table.insert(self.doorways, Doorway('top', false, self))
@@ -178,34 +181,66 @@ function Room:update(dt)
 
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
+        if not entity.dead then
+            -- remove entity from the table if health is <= 0
+            if entity.health <= 0 then
+                entity.dead = true
+                -- chance to spawn a heart
+                if math.random(5) == 1 then
+                    local heart = GameObject(GAME_OBJECT_DEFS['heart'], entity.x, entity.y)
 
-        -- remove entity from the table if health is <= 0
-        if entity.health <= 0 then
-            entity.dead = true
-        elseif not entity.dead then
-            entity:processAI({room = self}, dt)
-            entity:update(dt, {objects = self.objects})
-        end
+                    heart.onConsume = function ()
+                        self.player:heal(2)
+                        gSounds['powerup']:play()
+                    end
 
-        -- collision between the player and entities in the room
-        if not entity.dead and self.player:collides(entity) and not self.player.invulnerable then
-            gSounds['hit-player']:play()
-            self.player:damage(1)
-            self.player:goInvulnerable(1.5)
+                    table.insert(self.objects, heart)
+                end
+            else
+                entity:processAI({room = self}, dt)
+                entity:update(dt, {objects = self.objects})
+            end
 
-            if self.player.health == 0 then
-                gStateMachine:change('game-over')
+            -- collision between the player and entities in the room
+            if self.player:collides(entity) and not self.player.invulnerable then
+                gSounds['hit-player']:play()
+                self.player:damage(1)
+                self.player:goInvulnerable(1.5)
+
+                if self.player.health == 0 then
+                    gStateMachine:change('game-over')
+                end
+            end
+
+            for k, throw in pairs(self.throwable) do
+                if not throw.consumed and throw:collides(entity) then
+                    entity:damage(1)
+                    if entity.health == 0 then
+                        entity.dead = true
+                        gSounds['hit-throw']:play()
+                    end
+                    throw.consumed = true
+                end
             end
         end
     end
 
     for k, object in pairs(self.objects) do
-        object:update(dt)
-
-        -- trigger collision callback on object
-        if self.player:collides(object) then
-            object:onCollide()
+        if not object.consumed then
+            object:update(dt)
+            -- trigger collision callback on object
+            if self.player:collides(object) then
+                object:onCollide()
+                if object.type == 'heart' then 
+                    object:onConsume()
+                    object.consumed = true
+                end
+            end
         end
+    end
+
+    for k, throw in pairs(self.throwable) do
+        throw:update(dt)
     end
 end
 
@@ -226,12 +261,13 @@ function Room:render()
     end
 
     for k, object in pairs(self.objects) do
-        object:render(self.adjacentOffsetX, self.adjacentOffsetY)
+        if not object.consumed then object:render(self.adjacentOffsetX, self.adjacentOffsetY) end
     end
 
     for k, entity in pairs(self.entities) do
         if not entity.dead then entity:render(self.adjacentOffsetX, self.adjacentOffsetY) end
     end
+
 
     -- stencil out the door arches so it looks like the player is going through
     love.graphics.stencil(function()
@@ -257,6 +293,9 @@ function Room:render()
     
     if self.player then
         self.player:render()
+        for k, throw in pairs(self.throwable) do
+            if not throw.consumed then throw:render(self.adjacentOffsetX, self.adjacentOffsetY) end
+        end
     end
 
     love.graphics.setStencilTest()

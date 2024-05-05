@@ -106,6 +106,9 @@ function Dungeon:beginShifting(shiftX, shiftY)
             doorway.open = false
         end
 
+        -- remove any held projectile
+        self.player.pojectile = nil
+
         gSounds['door']:play()
     end)
 end
